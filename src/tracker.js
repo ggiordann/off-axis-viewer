@@ -28,9 +28,9 @@ async function startCamera() {
   resizeOverlay();
 }
 
-// initialize MediaPipe FaceMesh. `locateFile` tells the library where to load
-// its wasm/worker/code files from; here we use the jsdelivr CDN. the options
-// below are conservative defaults that detect a single face and enable
+// initialize MediaPipe FaceMesh. locateFile tells the library where to load
+// its files. from here we use the jsdelivr CDN. the
+// below are defaults that detect a single face and enable
 // refined landmarks for features like the eyes and lips.
 const faceMesh = new FaceMesh({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
 faceMesh.setOptions({
@@ -41,11 +41,11 @@ faceMesh.setOptions({
 });
 
 // holds the most recent inference results from FaceMesh
-// object contains `multiFaceLandmarks` (array of landmark arrays) and other metadata
+// object contains multiFaceLandmarks (array of landmark arrays) and other metadata
 let lastResults = null;
 
 // when FaceMesh produces new results, store them and request a redraw of the
-// overlay. `draw()` reads `lastResults` and paints landmarks to the canvas.
+// overlay. draw() reads lastResults and paints landmarks to the canvas.
 faceMesh.onResults((results) => { lastResults = results; draw(); });
 
 // update overlay sizing when video metadata or window size changes
@@ -56,15 +56,15 @@ window.addEventListener('resize', resizeOverlay);
 // coordinates on the overlay canvas.
 
 // the video element uses an 'object-fit: cover' style in order to fill the
-//   viewport; this means the raw video frame may be scaled and cropped
+// viewport. this means the raw video frame may be scaled and cropped
 
 // compute the scale required to cover the viewport and the offsets that
-//   produce letterboxing/cropping so we can map normalized coordinates to the
-//   displayed region
+// produce letterboxing/cropping so we can map normalized coordinates to the
+// displayed region
 
 // because the camera preview is presented in selfie (mirrored) mode, we
-//   mirror the X coordinate so the overlay landmarks line up with the visual
-//   video. (this why i was getting rgked)
+// mirror the X coordinate so the overlay landmarks line up with the visual
+// video. (this why i was getting rgked)
 
 function videoToPixels(normX, normY) {
   const vw = video.videoWidth || 1280;
@@ -91,14 +91,14 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!lastResults) return;
 
-  // `multiFaceLandmarks` is an array of faces; we only handle the first face
-  // in this example. Each `landmarks` array contains many points describing
+  // multiFaceLandmarks is an array of faces; we only handle the first face
+  // in this example. Each landmarks array contains many points describing
   // facial features (e.g. eyes, nose, mouth). Points are in normalized
   // coordinates relative to the source video frame.
   if (lastResults.multiFaceLandmarks && lastResults.multiFaceLandmarks.length) {
     const landmarks = lastResults.multiFaceLandmarks[0];
-    // draw small white dots for each landmark. Because `ctx.setTransform`
-    // was configured in `resizeOverlay`, these coordinates are in CSS pixels.
+    // draw small white dots for each landmark. Because ctx.setTransform
+    // was configured in resizeOverlay, these coordinates are in CSS pixels.
     ctx.fillStyle = '#fff';
     for (let i = 0; i < landmarks.length; i++) {
       const lm = landmarks[i];
@@ -133,7 +133,7 @@ async function loop() {
     loop();
   } catch (err) {
     console.error(err);
-    // the original code wrote to `info` which may not exist in the DOM; guard
+    // the original code wrote to info which may not exist in the DOM. guard
     // against that to avoid error when showing the message
     if (typeof info !== 'undefined' && info) info.innerText = 'Camera error: ' + err.message;
   }
